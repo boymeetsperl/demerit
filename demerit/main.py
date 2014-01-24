@@ -1,7 +1,8 @@
-from os import listdir, mkdir, path
+from os import listdir, mkdir, path, chdir
 from subprocess import call
 
 GRADE_DIR = "/Users/ianmcgaunn/submissions"
+DEVNULL = open("/dev/null", "w")
 # finds association between student names and .tar files
 def get_tar_files():
     sub_files = listdir(GRADE_DIR)
@@ -10,7 +11,7 @@ def get_tar_files():
     userMap = {}
 
     for archive in tar_files:
-        name = archive.split(".")[0]
+        name = path.splitext(archive)[0]
         userMap[name] = archive
 
     return userMap
@@ -38,7 +39,24 @@ def extract_assign(user_map):
             assign_dir_map[key] = curr_dir
     return assign_dir_map
 
+# compiles the program contained by dir_path
+# returns True if successful, else if no Makefile
+# found or
+def compile_dir(dir_path):
+    print dir_path
+    if path.isfile(dir_path+"/"+"Makefile") != True:
+        print "makefile missing :("
+        return False
+    else:
+        chdir(dir_path)
+        result = call(["make"], stdout=DEVNULL)
+        if result != 0:
+            print "problem with make"
+            return False
+        return True
+
 user_map = get_tar_files()
 directories = extract_assign(user_map)
 
 print directories
+compile_dir(directories["something"])
