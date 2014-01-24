@@ -1,28 +1,25 @@
 from os import listdir, mkdir, path, chdir, getcwd
 from subprocess import call
+import yaml as yml
+import sys
 
-GRADE_DIR = "/Users/ianmcgaunn/submissions"
-DEVNULL = open("/dev/null", "w")
-# finds association between student names and .tar files
-def get_tar_files():
-    sub_files = listdir(GRADE_DIR)
-    tar_files = filter(lambda name: '.tar' in name, sub_files)
+import shared
+from fetch import get_tar_files
 
-    userMap = {}
-
-    for archive in tar_files:
-        name = path.splitext(archive)[0]
-        userMap[name] = archive
-
-    return userMap
+# the directory where the root of the demerit project is
+# try:
+#     CONFIG = open(getcwd()+"/"+"config.yml", "r")
+# except IOError:
+#     print "error loading config file"
+#     sys.exit(0)
 
 def extract_assign(user_map):
     assign_dir_map = {}
 
     for key in user_map:
         print key
-        curr_dir = GRADE_DIR + "/{}".format(key)
-        curr_archive = GRADE_DIR + "/{}".format(user_map[key])
+        curr_dir = shared.GRADE_DIR + "/{}".format(key)
+        curr_archive = shared.GRADE_DIR + "/{}".format(user_map[key])
         if path.exists(curr_dir) != True:
             mkdir(curr_dir)
 
@@ -40,20 +37,26 @@ def extract_assign(user_map):
 # generates a makefile for the current assignment
 # given its directory and its name
 def gen_mk(assign_dir, assign_name):
-    cwd = getcwd()
     c_files = filter(lambda name: '.c' in name, listdir(assign_dir))
 
     makefile_lines = []
     makefile_lines.append("TARGET = "+assign_name+"\n")
     makefile_lines.append("SOURCES = " + " ".join(c_files)+"\n")
     makefile_lines.append("CFLAGS = -ansi -pedantic -Wall -lm\n")
-    makefile_lines.append("include "+cwd+"/resources/edam.mk"+"\n")
+    makefile_lines.append("include "+shared.DEMERIT_DIR+"/resources/edam.mk"+"\n")
 
+    return makefile_lines
+
+# takes a list of lines comprising a Makefile and places
+# it in assign_dir. Returns True if successful else False
+def create_makefile(makefile_content, assign_dir):
     try:
         makefile = open(assign_dir+"/"+"Makefile", "w")
-        makefile.writelines(makefile_lines)
+        makefile.writelines(makefile_content)
+        return True
     except IOError:
         print "Couldn't open Makefile for writing"
+        return False
 
 # compiles the program contained by dir_path
 # returns True if successful, else if no Makefile
@@ -64,7 +67,7 @@ def compile_dir(dir_path):
         return False
     else:
         chdir(dir_path)
-        result = call(["make"], stdout=DEVNULL)
+        result = call(["make"], stdout=shared.DEVNULL)
         if result != 0:
             return False
         return True
@@ -74,4 +77,18 @@ directories = extract_assign(user_map)
 
 print directories
 
-gen_mk(directories["something"], "something")
+if shared.GEN_MAKEFILE == True:
+    successes = []
+    fail = []
+    for student in directories:
+        print("generating makefile for: {}".format(student))
+        mk_lines = gen_mk(directories[student], student)
+        create_makefile(mk_lines, directories[student])
+        if compile_dir(directories[student]) == False:
+            print("compilation failed for {}".format(student))
+            fail.append(student)
+        else:
+            successes.append(student)
+
+print successes
+print fail
