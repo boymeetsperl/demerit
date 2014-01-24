@@ -1,4 +1,4 @@
-from os import listdir, mkdir, path, chdir
+from os import listdir, mkdir, path, chdir, getcwd
 from subprocess import call
 
 GRADE_DIR = "/Users/ianmcgaunn/submissions"
@@ -15,9 +15,7 @@ def get_tar_files():
         userMap[name] = archive
 
     return userMap
-# takes a mapping between student name and archive
-# and extracts each archive to new directory corresponding
-# to student name.
+
 def extract_assign(user_map):
     assign_dir_map = {}
 
@@ -39,19 +37,35 @@ def extract_assign(user_map):
             assign_dir_map[key] = curr_dir
     return assign_dir_map
 
+# generates a makefile for the current assignment
+# given its directory and its name
+def gen_mk(assign_dir, assign_name):
+    cwd = getcwd()
+    c_files = filter(lambda name: '.c' in name, listdir(assign_dir))
+
+    makefile_lines = []
+    makefile_lines.append("TARGET = "+assign_name+"\n")
+    makefile_lines.append("SOURCES = " + " ".join(c_files)+"\n")
+    makefile_lines.append("CFLAGS = -ansi -pedantic -Wall -lm\n")
+    makefile_lines.append("include "+cwd+"/resources/edam.mk"+"\n")
+
+    try:
+        makefile = open(assign_dir+"/"+"Makefile", "w")
+        makefile.writelines(makefile_lines)
+    except IOError:
+        print "Couldn't open Makefile for writing"
+
 # compiles the program contained by dir_path
 # returns True if successful, else if no Makefile
-# found or
+# found or compilation fails, return False.
 def compile_dir(dir_path):
     print dir_path
     if path.isfile(dir_path+"/"+"Makefile") != True:
-        print "makefile missing :("
         return False
     else:
         chdir(dir_path)
         result = call(["make"], stdout=DEVNULL)
         if result != 0:
-            print "problem with make"
             return False
         return True
 
@@ -59,4 +73,5 @@ user_map = get_tar_files()
 directories = extract_assign(user_map)
 
 print directories
-compile_dir(directories["something"])
+
+gen_mk(directories["something"], "something")
