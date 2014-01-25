@@ -31,12 +31,25 @@ def create_mk(makefile_content, assign_dir):
 # returns True if successful, else if no Makefile
 # found or compilation fails, return False.
 def compile_dir(dir_path):
-    print dir_path
     if path.isfile(dir_path+"/"+"Makefile") != True:
         return False
     else:
         chdir(dir_path)
-        result = call(["make"], stdout=shared.DEVNULL)
+        result = call(["make"], stdout=shared.DEVNULL, stderr=shared.DEVNULL)
         if result != 0:
             return False
         return True
+
+# returns a mapping between student name and path of executable
+# created from compilation. path is None if compilation fails
+def compile_all(assign_dir_map):
+    user_executable_map = {}
+
+    for student in assign_dir_map:
+        if compile_dir(assign_dir_map[student]) == True:
+            exec_path = assign_dir_map[student]+"/"+student
+            user_executable_map[student] = exec_path
+        else:
+            user_executable_map[student] = None
+
+    return user_executable_map
