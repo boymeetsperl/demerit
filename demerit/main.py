@@ -1,5 +1,3 @@
-# from os import listdir, mkdir, path, chdir, getcwd
-# from subprocess import call
 import sys
 
 import shared
