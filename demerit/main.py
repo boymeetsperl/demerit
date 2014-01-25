@@ -12,18 +12,21 @@ directories = extract_assign(user_map)
 
 print directories
 
+working = []
+failing = []
+
 if shared.GEN_MAKEFILE == True:
-    successes = []
-    fail = []
+
     for student in directories:
         print("generating makefile for: {}".format(student))
         mk_lines = gen_mk(directories[student], student)
         create_mk(mk_lines, directories[student])
+
         if compile_dir(directories[student]) == False:
             print("compilation failed for {}".format(student))
-            fail.append(student)
+            failing.append(student)
         else:
-            successes.append(student)
+            working.append(student)
 
-print successes
-print fail
+print("working: {}".format(working))
+print("failing: {}".format(failing))
