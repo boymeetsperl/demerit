@@ -1,3 +1,11 @@
 grade_dir: "/Users/ianmcgaunn/submissions"
 demerit_dir: "/Users/ianmcgaunn/Documents/python/demerit/demerit"
 gen_makefile: true
+
+# input to be sent to program through stdin
+stdin: "swag"
+
+# input to be sent to program through argv
+argv: "sweg"
+
+
