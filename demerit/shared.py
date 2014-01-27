@@ -9,7 +9,8 @@ except IOError:
 
 opts = load(CONFIG)
 
-GRADE_DIR = opts["grade_dir"]
-DEMERIT_DIR = opts["demerit_dir"]
-GEN_MAKEFILE = opts["gen_makefile"]
+config = {}
+for key in opts:
+    config[key] = opts[key]
+
 DEVNULL = open("/dev/null", "w")
