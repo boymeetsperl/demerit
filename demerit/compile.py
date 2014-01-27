@@ -45,8 +45,6 @@ def compile_dir(dir_path):
 def compile_all(assign_dir_map):
     user_executable_map = {}
 
-    print shared.config["gen_makefile"]
-
     for student in assign_dir_map:
         make_txt = gen_mk(assign_dir_map[student], student)
         if shared.config["gen_makefile"] == True:
