@@ -12,7 +12,7 @@ def gen_mk(assign_dir, assign_name):
     makefile_lines.append("TARGET = "+assign_name+"\n")
     makefile_lines.append("SOURCES = " + " ".join(c_files)+"\n")
     makefile_lines.append("CFLAGS = -ansi -pedantic -Wall -lm\n")
-    makefile_lines.append("include "+shared.DEMERIT_DIR+"/resources/edam.mk"+"\n")
+    makefile_lines.append("include "+shared.config["demerit_dir"]+"/resources/edam.mk"+"\n")
 
     return makefile_lines
 
@@ -45,7 +45,12 @@ def compile_dir(dir_path):
 def compile_all(assign_dir_map):
     user_executable_map = {}
 
+    print shared.config["gen_makefile"]
+
     for student in assign_dir_map:
+        make_txt = gen_mk(assign_dir_map[student], student)
+        if shared.config["gen_makefile"] == True:
+            create_mk(make_txt, assign_dir_map[student])
         if compile_dir(assign_dir_map[student]) == True:
             exec_path = assign_dir_map[student]+"/"+student
             user_executable_map[student] = exec_path
