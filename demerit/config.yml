@@ -4,7 +4,8 @@ demerit_dir: "/Users/ianmcgaunn/Documents/python/demerit/demerit"
 assign_name: "none"
 gen_makefile: true
 
+run_programs: true
 # input to be sent to program through stdin
-stdin: "swag"
+stdin: "kill yourself"
 # input to be sent to program through argv
-argv: "sweg"
+argv: "/Users/ianmcgaunn/Documents/python/demerit/demerit/resources/gcd.txt"

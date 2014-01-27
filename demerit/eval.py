@@ -20,6 +20,9 @@ def run_program(path):
         prog = Popen(arg_list, stdout=PIPE, stdin=PIPE, stderr=shared.DEVNULL)
         if shared.config["stdin"] != False:
             output, error = prog.communicate(input=shared.config["stdin"])
+            rc = prog.returncode
+            if rc != 0:
+                output = None
         else:
             output, error = prog.communicate()
     except CalledProcessError:
