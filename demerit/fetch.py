@@ -2,7 +2,7 @@ import shared
 from os import listdir, path
 
 def get_tar_files():
-    sub_files = listdir(shared.GRADE_DIR)
+    sub_files = listdir(shared.config["grade_dir"])
     tar_files = filter(lambda name: '.tar' in name, sub_files)
 
     userMap = {}

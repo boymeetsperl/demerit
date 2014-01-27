@@ -1,4 +1,4 @@
-from os import path
+from os import path, mkdir
 from subprocess import call
 
 import shared
@@ -7,8 +7,8 @@ def extract_assign(user_map):
     assign_dir_map = {}
 
     for key in user_map:
-        curr_dir = shared.GRADE_DIR + "/{}".format(key)
-        curr_archive = shared.GRADE_DIR + "/{}".format(user_map[key])
+        curr_dir = shared.config["grade_dir"] + "/{}".format(key)
+        curr_archive = shared.config["grade_dir"] + "/{}".format(user_map[key])
         if path.exists(curr_dir) != True:
             mkdir(curr_dir)
 
